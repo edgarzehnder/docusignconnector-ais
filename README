@@ -1,7 +1,1 @@
-DocuSign connector for All-In Signing Service.
-
-Improvements:
-1. The connector only accepts one document - extend for several ones.
-2. Customer-specific AIS configuration account
-3. Logging: https://blog.risingstack.com/node-js-logging-tutorial
-
+DocuSign Connector for All-In Signing Service.
