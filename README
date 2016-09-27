@@ -1,9 +1,4 @@
-TODO: 
-a. Commit to swisscom git repo
-https://git.swisscom.ch/projects/AIS
-
-Issues:
-A. Mobile number is not being returned by the DS API call - it defaults to a hardcoded value
+DocuSign connector for All-In Signing Service.
 
 Improvements:
 1. The connector only accepts one document - extend for several ones.
