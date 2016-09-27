@@ -4,5 +4,4 @@ Improvements:
 1. The connector only accepts one document - extend for several ones.
 2. Customer-specific AIS configuration account
 3. Logging: https://blog.risingstack.com/node-js-logging-tutorial
-4. Polling should be done by the client - the redirect to the /poll location is a bit of a hack actually
 
