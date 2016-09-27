@@ -1,0 +1,20 @@
+{
+  "name": "ds-ais-connector",
+  "version": "1.0.0",
+  "description": "DocuSign connector for All-In Signing Service as Trust Service Provider.",
+  "main": "server.js",
+  "dependencies": {
+    "date-format": "0.0.2",
+    "express": "~4.14.0",
+    "promise": "^7.1.1",
+    "request": "~2.74.0",
+    "sleep-async": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "BSD-2-Clause"
+}

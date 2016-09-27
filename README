@@ -1,0 +1,13 @@
+TODO: 
+a. Commit to swisscom git repo
+https://git.swisscom.ch/projects/AIS
+
+Issues:
+A. Mobile number is not being returned by the DS API call - it defaults to a hardcoded value
+
+Improvements:
+1. The connector only accepts one document - extend for several ones.
+2. Customer-specific AIS configuration account
+3. Logging: https://blog.risingstack.com/node-js-logging-tutorial
+4. Polling should be done by the client - the redirect to the /poll location is a bit of a hack actually
+
