@@ -54,8 +54,20 @@ app.get('/dsconnector', function(req, res) {
 
 	}).then(function(result) {
 
-		var html = "<script>window.open('" + result.url + "'); window.location='https://lab-pki.swisscom.com/poll?id=" + result.id + "'</script>";
-		res.end(html);
+		// If PwdOTP, open consentURL
+		// Redirect to polling location
+		if (result.url != "NONE") {
+			console.log("PwdOTP");
+			var html = "<script>window.open('" + result.url + "'); window.location='https://lab-pki.swisscom.com/poll?id=" + result.id + "'</script>";
+			res.end(html);
+
+		} else {
+			console.log("MobileID");
+			res.writeHead(302, {
+				'Location': 'https://lab-pki.swisscom.com/poll?id=' + result.id	
+			});
+			res.end();
+		}
 	});
 });
 

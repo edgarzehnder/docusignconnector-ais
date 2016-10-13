@@ -5,6 +5,7 @@ var Promise = require('promise');
 var qs = require('querystring');
 var request = require('request');
 var config = require('./config');
+var debug = require('debug')('http');
 
 function getOAuthToken(authorization_code) {
 
@@ -33,15 +34,12 @@ function getOAuthToken(authorization_code) {
                 var my_request = request(options, function(error, response, body) {
 
                         if (response.statusCode == "200") {
-//				console.log("\n-------------------------------\n");
-//				console.log(body);
-//				console.log("\n-------------------------------\n");
-                                resolve(body);
+				resolve(body);
                         } else {
                                 reject(body);
                         }
                 });	
-
+		debug('Authentication request: %s', my_request);
         });
 };
 

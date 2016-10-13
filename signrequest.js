@@ -19,6 +19,7 @@ var info_tmp = {
 	user: {
 		displayName: 'Eva',
 		email: 'eva@me.com',
+		// phoneNumber: '41792533729'	
 		phoneNumber: '41794374625'
 	}
 }
@@ -38,11 +39,26 @@ function signpwdotp(info) {
 
 		result.then(function(result) {
 
-			var response_id = result.SignResponse.OptionalOutputs['async.ResponseID'];
-			var consent_url = result.SignResponse.OptionalOutputs['sc.StepUpAuthorisationInfo']['sc.Result']['sc.ConsentURL'];
+			console.log("------------------------------------------");
+			console.log(util.inspect(result));
+			console.log("------------------------------------------");
 
+			var response_id = result.SignResponse.OptionalOutputs['async.ResponseID'];
+
+			// Check if PwdOTP or MobileID (ConsentURL available or not)	
+			var optional_outputs = result.SignResponse.OptionalOutputs;
+			var consent_url;	
+			if (optional_outputs.hasOwnProperty('sc.StepUpAuthorisationInfo')) {
+				
+				console.log("Using PwdOTP for Declaration of Will.");
+				consent_url = result.SignResponse.OptionalOutputs['sc.StepUpAuthorisationInfo']['sc.Result']['sc.ConsentURL'];
+			} else {
+				console.log("Using MobileID for Declaration of Will."); 
+				consent_url = "NONE";
+			}
+	
 			var pending = result.SignResponse.Result.ResultMajor;
-		
+			
 			var pending_response = {	
 				'url': consent_url,
 				'id': response_id 
