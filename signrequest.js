@@ -19,7 +19,6 @@ var info_tmp = {
 	user: {
 		displayName: 'Eva',
 		email: 'eva@me.com',
-		// phoneNumber: '41792533729'	
 		phoneNumber: '41794374625'
 	}
 }
@@ -83,19 +82,25 @@ function sign(info) {
 		// console.log("- Hash: " + hash);
 		var name = body.documents[0].name;
 		// console.log("- Name: " + name);
-		
-		// Phone is undefined: hard-code mine	
-		var phone = body.user.phoneNumber;
+	
+		// Credentials type "sms" included in the user object	
+		var phone = body.user.credentials[0].value;
+			
+		// Phone is undefined: hard-code test one (see above info_tmp)	
 		if (phone == undefined) {
 			console.log("Phone Number undefined - getting fix configured one.");	
 			phone = info_tmp.user.phoneNumber;
+		
+		} else {
+			// Number is a string in the form "+41 79 253 37 29"
+			// Remove blanks
+			phone = phone.replace(/\s/g, '');
+			// Remove the '+'
+			phone = phone.replace(/\+/g, '');
 		}
-
-		// console.log("- Phone: " + phone);
+	
 		var dn = 'cn=TEST ' + body.user.displayName + ', o=Swisscom (Schweiz) AG, c=CH, ou=Certificate and signatures for test purpose only';
 
-		// console.log("- DN: " + dn);
-	
 		var json = getJsonRequest(config.claimedIdentity, dn, phone, name, hash);
 		var data_length = Buffer.byteLength(JSON.stringify(json));	
 		var sign_options = getOptions(data_length, false);
