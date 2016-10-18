@@ -4,12 +4,13 @@ var util = require('util');
 var Promise = require('promise');
 var qs = require('querystring');
 var request = require('request');
-var config = require('./config');
+var config = require('./config/config');
 var debug = require('debug')('http');
 
 function getOAuthToken(authorization_code) {
 
 	return new Promise(function(resolve, reject) {
+
 
 		var secret_key_base64 = new Buffer('3dacc143-d581-4bf8-b433-6b487f33876d:3e29f10c-e05e-451f-8526-613cb326acbe').toString('base64');
 

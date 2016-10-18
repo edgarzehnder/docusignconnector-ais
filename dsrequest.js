@@ -1,6 +1,6 @@
 var Promise = require('promise');
 var request = require('request');
-var config = require('./config');
+var config = require('./config/config');
 var util = require('util');
 
 function getSignInfo(accessToken, api) {
@@ -82,10 +82,8 @@ function postCompleteSignInfo(accessToken, api, signature, info) {
 		request(options, function(error, response, body) {
 
 			if (!error && response.statusCode == 200) {
-				// console.log(body);
 				resolve(body);
 			} else {
-				// console.log(error.message);
 				reject(response.statusCode);
 			}
 		});

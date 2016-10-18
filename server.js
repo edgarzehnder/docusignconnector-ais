@@ -24,7 +24,7 @@ app.get('/dsconnector', function(req, res) {
 
 	result.then(function(result) {
 	
-		// console.log("---> POST request 1 to DS...");
+		console.log("=====> POST request getSignInfo() to DocuSign...");
 		console.log(result);
 	
 		// Parse response and extract access token
@@ -37,14 +37,13 @@ app.get('/dsconnector', function(req, res) {
 	
 	}).then(function(result) {
 
-		//console.log("---> SignRequest to AIS...");
-
 		// If succesfull, the GET result will contain then sign info
 		if (result != undefined) {
 			info = result;
 		}
 
-		console.log("Result: " + result);
+		console.log("=====> Sign request (async) to All-In Signing...");
+		console.log(result);
 	
 		// AIS Signing Request	
 		return signrequest.signpwdotp(info); 
@@ -74,8 +73,10 @@ app.get('/dsconnector', function(req, res) {
 // Second redirect: self-redirect to poll location, after sending signing request and opening consent URL
 app.get('/poll', function(req, res) {
 
+	console.log('/poll');
+
 	var id = req.query.id;
-	console.log("/poll " + id);
+	console.log("=====> Pending request (polling) to All-In Signing...");
 	
 	// Start the polling
 	var result = signrequest.pending(id, 0);

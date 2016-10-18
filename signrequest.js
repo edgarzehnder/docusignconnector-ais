@@ -1,27 +1,12 @@
 'use strict';
 
 var https = require('https');	
-var config = require('./config');
+var config = require('./config/config');
 var Promise = require('promise');
 var pending_string = "urn:oasis:names:tc:dss:1.0:profiles:asynchronousprocessing:resultmajor:Pending";
 var sleep = require('sleep-async')();
 var util = require('util');
 var dateFormat = require('date-format');
-
-// Until DocuSign client is working
-var info_tmp = {
-	documents: [ 
-		{	
-		name: 'Test',
-		data: '1WON4H3Hrinf7LYRNmhV6Uf7apdUvuYEsmhxAklxumA=',
-		}
-	],
-	user: {
-		displayName: 'Eva',
-		email: 'eva@me.com',
-		phoneNumber: '41794374625'
-	}
-}
 
 function signpwdotp(info) {
 
@@ -33,14 +18,11 @@ function signpwdotp(info) {
 			console.log("Sign");
 		}
 
-	//	console.log("Info: " + util.inspect(info));	
 		var result = sign(info);
 
 		result.then(function(result) {
 
-			console.log("------------------------------------------");
 			console.log(util.inspect(result));
-			console.log("------------------------------------------");
 
 			var response_id = result.SignResponse.OptionalOutputs['async.ResponseID'];
 
@@ -56,8 +38,6 @@ function signpwdotp(info) {
 				consent_url = "NONE";
 			}
 	
-			var pending = result.SignResponse.Result.ResultMajor;
-			
 			var pending_response = {	
 				'url': consent_url,
 				'id': response_id 
@@ -75,7 +55,6 @@ function sign(info) {
 
 
 		var body = JSON.parse(info);
-
 		// console.log("Body: " + util.inspect(body));
 
 		var hash = body.documents[0].data;
@@ -88,9 +67,8 @@ function sign(info) {
 			
 		// Phone is undefined: hard-code test one (see above info_tmp)	
 		if (phone == undefined) {
-			console.log("Phone Number undefined - getting fix configured one.");	
-			phone = info_tmp.user.phoneNumber;
-		
+			reject("Phone Number undefined!");	
+	
 		} else {
 			// Number is a string in the form "+41 79 253 37 29"
 			// Remove blanks
@@ -98,9 +76,10 @@ function sign(info) {
 			// Remove the '+'
 			phone = phone.replace(/\+/g, '');
 		}
-	
-		var dn = 'cn=TEST ' + body.user.displayName + ', o=Swisscom (Schweiz) AG, c=CH, ou=Certificate and signatures for test purpose only';
 
+		// Build the DN, with the user name in the DS response and the configured values
+		var dn = 'cn=' + config.cnPrefix + body.user.displayName + ', ' + config.dnSuffix;
+	
 		var json = getJsonRequest(config.claimedIdentity, dn, phone, name, hash);
 		var data_length = Buffer.byteLength(JSON.stringify(json));	
 		var sign_options = getOptions(data_length, false);
@@ -113,7 +92,6 @@ function sign(info) {
                 	});
 
                 	sign_res.on('end', function() {
-				//console.log("Body: " + body);
 				resolve(JSON.parse(body));
 			});        	
 
@@ -155,6 +133,7 @@ function pending(responseID, counter) {
 					var sign_response = sign_response_json.SignResponse;
 					var pending_result = sign_response.Result.ResultMajor;
 
+					// TODO Check if error
 					if (pending_result != pending_string) {
 						console.log("Success!");
 						resolve(sign_response.SignatureObject.Base64Signature.$);
@@ -187,8 +166,8 @@ function getOptions(length, poll) {
 
 	var fs = require('fs');
 	var url = require('url');
-	var config = require('./config');
-	var ais_url = poll ? url.parse(config.aisUrlPending) : url.parse(config.aisUrl);
+
+	var ais_url = poll ? url.parse(config.aisUrl + '/pending') : url.parse(config.aisUrl + '/sign');
 
 	var sign_options = {
 		host: ais_url.hostname,
@@ -200,9 +179,9 @@ function getOptions(length, poll) {
 			"Content-Length": length,
 			"Accept": "application/json"
 		},
-		key: fs.readFileSync('ssl/mycert-preprod.key'),
-		cert: fs.readFileSync('ssl/mycert-preprod.pem'),
-		ca: fs.readFileSync('ssl/ais-ca-ssl-pp.pem')
+		key: fs.readFileSync(config.key),
+		cert: fs.readFileSync(config.cert),
+		ca: fs.readFileSync(config.ca)
 	};
 	return sign_options;
 }
@@ -230,8 +209,8 @@ function getJsonRequest(claimedIdentity, dn, phone, name, hash) {
                                 "sc.StepUpAuthorisation": {
                                         "sc.Phone": {
                                                 "sc.MSISDN": phone,
-                                                "sc.Message": "DocuSign: sign " + name + "?",
-                                                "sc.Language": "EN"
+                                                "sc.Message": config.dtbd + " " +  name + "?",
+                                                "sc.Language": config.language 
                                         }
                                 }
                         },
@@ -244,7 +223,6 @@ function getJsonRequest(claimedIdentity, dn, phone, name, hash) {
 		  "@Algorithm": "http://www.w3.org/2001/04/xmlenc#sha256"
 		},
 		"dsig.DigestValue": hash 
-		// "dsig.DigestValue": "1WON4H3Hrinf7LYRNmhV6Uf7apdUvuYEsmhxAklxumA=" 
 	      }
 	    }
 	  }
