@@ -1,13 +1,17 @@
 FROM node:4
 MAINTAINER Eva Ramon <eva.ramon@swisscom.com>
 
-# Install npm dependencies
-RUN npm install --save date-format express promise request sleep-async
 
 # Environment
 ENV WORK=/opt/work
+RUN mkdir -p $WORK
+WORKDIR $WORK
 
-# Add files <src> <destination> where <src> is a releative path to the build context
+# Install npm dependencies
+COPY package.json $WORK/package.json
+RUN npm install
+
+# Bundle app source 
 COPY oauth.js $WORK/oauth.js
 COPY dsrequest.js $WORK/dsrequest.js
 COPY signrequest.js $WORK/signrequest.js
@@ -20,6 +24,5 @@ VOLUME $WORK/config
 EXPOSE 8001
 
 # Run the server
-WORKDIR $WORK
-CMD $WORK/nodejs server.js
+CMD ["npm", "start"]
 
