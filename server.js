@@ -24,8 +24,9 @@ app.get('/dsconnector', function(req, res) {
 
 	result.then(function(result) {
 	
+		console.log("Authorization result: " + result);
+		
 		console.log("=====> POST request getSignInfo() to DocuSign...");
-		console.log(result);
 	
 		// Parse response and extract access token
 		var body = JSON.parse(result);
@@ -41,6 +42,13 @@ app.get('/dsconnector', function(req, res) {
 		if (result != undefined) {
 			info = result;
 		}
+	
+		console.log("=====> GET request getUserInfo() to DocuSign...");
+			
+		// TEST: getUserInfo()
+		return dsrequest.getUserInfo(accessToken, api);
+
+	}).then(function(result) {
 
 		console.log("=====> Sign request (async) to All-In Signing...");
 		console.log(result);

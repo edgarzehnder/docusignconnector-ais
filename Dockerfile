@@ -1,28 +1,25 @@
 FROM node:4
 MAINTAINER Eva Ramon <eva.ramon@swisscom.com>
 
-
-# Environment
-ENV WORK=/opt/work
-RUN mkdir -p $WORK
-WORKDIR $WORK
-
-# Install npm dependencies
-COPY package.json $WORK/package.json
-RUN npm install
+# Set workdir to /app
+RUN mkdir -p /app
+WORKDIR /app
 
 # Bundle app source 
-COPY oauth.js $WORK/oauth.js
-COPY dsrequest.js $WORK/dsrequest.js
-COPY signrequest.js $WORK/signrequest.js
-COPY signrequest.js $WORK/server.js
+COPY package.json /app/
+COPY oauth.js /app/
+COPY dsrequest.js /app/
+COPY signrequest.js /app/
+COPY server.js /app/
+
+# Install npm dependencies
+RUN npm install
 
 # Volumes: configuration file and SSL keys
-VOLUME $WORK/config
+VOLUME /app/config
 
 # Expose ports
 EXPOSE 8001
 
 # Run the server
 CMD ["npm", "start"]
-

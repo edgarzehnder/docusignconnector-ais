@@ -3,6 +3,44 @@ var request = require('request');
 var config = require('./config/config');
 var util = require('util');
 
+function getUserInfo(accessToken, api) {
+
+	return new Promise(function(resolve, reject) {
+
+		// If user undefined return error
+		if (accessToken == 'undefined') {
+			reject("OAuth access token undefined.");
+		}
+
+		//var post_body = {}
+
+		var options = {
+                        url: api + '/restapi/v2/signature/userinfo',
+                        method: 'GET',
+                        headers: {
+                                'Authorization': 'Bearer ' + accessToken,
+                                'Content-Type': 'application/json; charset=utf-8'
+                        }
+                       // body: JSON.stringify(post_body)
+                }
+		console.log("Request getUserInfo(): " + util.inspect(options));
+
+                request(options, function(error, response, body) {
+
+                        console.log("-----> DS Response GET userInfo " + body);
+
+                        if (!error && response.statusCode == 200) {
+                                // console.log(body);
+                                resolve(body);
+                        } else {
+                                console.log(error);
+                                reject(error);
+                        }
+                });
+	});
+}
+
+
 function getSignInfo(accessToken, api) {
 
 	return new Promise(function(resolve, reject) {
@@ -91,6 +129,7 @@ function postCompleteSignInfo(accessToken, api, signature, info) {
 }
 
 module.exports={
+	getUserInfo: getUserInfo,	
 	getSignInfo: getSignInfo,
 	postCompleteSignInfo: postCompleteSignInfo
 }

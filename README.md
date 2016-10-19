@@ -4,11 +4,11 @@ NOTE: the connector application server listens on port 8001. Use a proxy to list
 
 # Instructions:
 Install nodejs. For example, on Ubuntu 16.04 LTS: 
-apt-get update
-apt-get install nodejs
+- apt-get update
+- apt-get install nodejs
 
 Install npm dependencies:
-npm install
+- npm install
 
 # Docker Image
 A docker image is available for easy integration in a customer environment.
