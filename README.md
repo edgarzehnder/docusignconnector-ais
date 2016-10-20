@@ -17,7 +17,10 @@ Install npm dependencies:
 # Docker Image
 A docker image is available for easy integration in a customer environment.
 
-Usage:
+Build the image:
+$ docker build -t swisscomtds/dsconnector .
+
+Run the image:
 $ docker run -p 8081:8081 -v /myconfigdirectory:/app/config swisscomtds/dsconnector-ais
 
 In 'myconfigdirectory' you need to include:
