@@ -58,6 +58,7 @@ app.get('/dsconnector', function(req, res) {
 	
 	}, function(error) {
 		console.log("Error: " + error);
+		res.send("Error: " + error);
 
 	}).then(function(result) {
 
@@ -69,12 +70,14 @@ app.get('/dsconnector', function(req, res) {
 			res.end(html);
 
 		} else {
-			console.log("MobileID");
 			res.writeHead(302, {
 				'Location': 'https://lab-pki.swisscom.com/poll?id=' + result.id	
 			});
 			res.end();
 		}
+	}, function(error) {
+		console.log("Error: " + error);
+		res.send("Error: " + error);
 	});
 });
 
@@ -113,7 +116,7 @@ app.get('/poll', function(req, res) {
 	});
 
 	result.catch(function(err) {
-		res.write("Timeout: signature failed.");
+		res.write("Signature failed: " + err);
 		res.send();
 	});
 });

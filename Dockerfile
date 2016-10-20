@@ -19,7 +19,7 @@ RUN npm install
 VOLUME /app/config
 
 # Expose ports
-EXPOSE 8001
+EXPOSE 8081
 
 # Run the server
 CMD ["npm", "start"]

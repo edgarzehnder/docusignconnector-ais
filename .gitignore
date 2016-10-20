@@ -1,3 +1,6 @@
+.dockerignore
 node_modules
 config/config.js
+config/config.js.preprod
+config/config.js.prod
 config/ssl/*

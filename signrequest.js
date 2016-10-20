@@ -4,6 +4,8 @@ var https = require('https');
 var config = require('./config/config');
 var Promise = require('promise');
 var pending_string = "urn:oasis:names:tc:dss:1.0:profiles:asynchronousprocessing:resultmajor:Pending";
+var success_string = "urn:oasis:names:tc:dss:1.0:resultmajor:Success";
+var error_string = "urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError";
 var sleep = require('sleep-async')();
 var util = require('util');
 var dateFormat = require('date-format');
@@ -14,9 +16,7 @@ function signpwdotp(info) {
 
 		if (info == undefined) {
 			reject("Sign Info unavailable - cannot sign.");
-		} else {
-			console.log("Sign");
-		}
+		} 
 
 		var result = sign(info);
 
@@ -24,17 +24,23 @@ function signpwdotp(info) {
 
 			console.log(util.inspect(result));
 
+			if (result.SignResponse.Result.ResultMajor == error_string) {
+				console.log(result.SignResponse.Result.ResultMinor);
+				reject(result.SignResponse.Result.ResultMinor);
+			}
+			
 			var response_id = result.SignResponse.OptionalOutputs['async.ResponseID'];
 
 			// Check if PwdOTP or MobileID (ConsentURL available or not)	
 			var optional_outputs = result.SignResponse.OptionalOutputs;
 			var consent_url;	
+			
+
 			if (optional_outputs.hasOwnProperty('sc.StepUpAuthorisationInfo')) {
 				
 				console.log("Using PwdOTP for Declaration of Will.");
 				consent_url = result.SignResponse.OptionalOutputs['sc.StepUpAuthorisationInfo']['sc.Result']['sc.ConsentURL'];
 			} else {
-				console.log("Using MobileID for Declaration of Will."); 
 				consent_url = "NONE";
 			}
 	
@@ -135,9 +141,18 @@ function pending(responseID, counter) {
 
 					// TODO Check if error
 					if (pending_result != pending_string) {
-						console.log("Success!");
-						resolve(sign_response.SignatureObject.Base64Signature.$);
+						if (pending_result != success_string) {
+							// No success and no pending: error
+							console.log(util.inspect(sign_response_json));	
+							reject("Error: " + sign_response.Result.ResultMinor);
+						} else {
+							// Success
+							console.log("Success!");
+							resolve(sign_response.SignatureObject.Base64Signature.$);
+						}
+					
 					} else {
+						// Pending
 						if (counter == max_count) {
 							console.log("Timeout!");
 							reject("Timeout!");	
