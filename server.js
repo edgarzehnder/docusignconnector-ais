@@ -17,6 +17,9 @@ var api;
 // First redirect: DocuSign Authorization Service redirects user request with authorization code 
 app.get('/dsconnector', function(req, res) {
 
+	// Environment variables for development
+	require('dotenv').load();
+
 	console.log('/dsconnector');
 
 	//  OAuth2 Authentication

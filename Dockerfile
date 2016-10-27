@@ -15,9 +15,6 @@ COPY server.js /app/
 # Install npm dependencies
 RUN npm install
 
-# Volumes: configuration file and SSL keys
-VOLUME /app/config
-
 # Expose ports
 EXPOSE 8081
 

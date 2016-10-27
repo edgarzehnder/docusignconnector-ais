@@ -1,6 +1,5 @@
 var Promise = require('promise');
 var request = require('request');
-var config = require('./config/config');
 var util = require('util');
 
 function getUserInfo(accessToken, api) {

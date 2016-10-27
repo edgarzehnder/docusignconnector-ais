@@ -1,7 +1,6 @@
 'use strict';
 
 var https = require('https');	
-var config = require('./config/config');
 var Promise = require('promise');
 var pending_string = "urn:oasis:names:tc:dss:1.0:profiles:asynchronousprocessing:resultmajor:Pending";
 var success_string = "urn:oasis:names:tc:dss:1.0:resultmajor:Success";
@@ -84,9 +83,11 @@ function sign(info) {
 		}
 
 		// Build the DN, with the user name in the DS response and the configured values
-		var dn = 'cn=' + config.cnPrefix + body.user.displayName + ', ' + config.dnSuffix;
+		var prefix = process.env.CN_PREFIX? process.env.CN_PREFIX + ' ' : '';	
+		var suffix = process.env.DN_SUFFIX | 'o=My organization, c=My Country, ou=My Organizational Unit';
+		var dn = 'cn=' + prefix + body.user.displayName + ', ' + suffix;
 	
-		var json = getJsonRequest(config.claimedIdentity, dn, phone, name, hash);
+		var json = getJsonRequest(process.env.CLAIMED_IDENTITY, dn, phone, name, hash);
 		var data_length = Buffer.byteLength(JSON.stringify(json));	
 		var sign_options = getOptions(data_length, false);
 
@@ -119,7 +120,7 @@ function pending(responseID, counter) {
 
 	return new Promise(function(resolve, reject) {
 
-		var json = getPendingJsonRequest(config.claimedIdentity, responseID);
+		var json = getPendingJsonRequest(process.env.CLAIMED_IDENTITY, responseID);
 		var data_length = Buffer.byteLength(JSON.stringify(json));
 		var pending_options = getOptions(data_length, true);
 		
@@ -182,7 +183,7 @@ function getOptions(length, poll) {
 	var fs = require('fs');
 	var url = require('url');
 
-	var ais_url = poll ? url.parse(config.aisUrl + '/pending') : url.parse(config.aisUrl + '/sign');
+	var ais_url = poll ? url.parse(process.env.AIS + '/pending') : url.parse(process.env.AIS + '/sign');
 
 	var sign_options = {
 		host: ais_url.hostname,
@@ -194,9 +195,9 @@ function getOptions(length, poll) {
 			"Content-Length": length,
 			"Accept": "application/json"
 		},
-		key: fs.readFileSync(config.key),
-		cert: fs.readFileSync(config.cert),
-		ca: fs.readFileSync(config.ca)
+		key: fs.readFileSync(process.env.KEY),
+		cert: fs.readFileSync(process.env.CERT),
+		ca: fs.readFileSync(process.env.CA)
 	};
 	return sign_options;
 }
@@ -204,6 +205,8 @@ function getOptions(length, poll) {
 function getJsonRequest(claimedIdentity, dn, phone, name, hash) {
 
 	var now = new Date();
+	var dtbd = process.env.DTBD | 'Do you want to sign';
+	var language = process.env.LANGUAGE | 'en';
 
 	return {
 	  "SignRequest": {
@@ -224,8 +227,8 @@ function getJsonRequest(claimedIdentity, dn, phone, name, hash) {
                                 "sc.StepUpAuthorisation": {
                                         "sc.Phone": {
                                                 "sc.MSISDN": phone,
-                                                "sc.Message": config.dtbd + " " +  name + "?",
-                                                "sc.Language": config.language 
+                                                "sc.Message": dtbd + " " +  name + "?",
+                                                "sc.Language": language 
                                         }
                                 }
                         },

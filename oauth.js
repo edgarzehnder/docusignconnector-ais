@@ -4,7 +4,6 @@ var util = require('util');
 var Promise = require('promise');
 var qs = require('querystring');
 var request = require('request');
-var config = require('./config/config');
 var debug = require('debug')('http');
 
 function getOAuthToken(authorization_code) {
@@ -17,12 +16,12 @@ function getOAuthToken(authorization_code) {
                 var my_body = {
                         grant_type: 'authorization_code',
                         code: authorization_code,
+			// What is actually the redirection uri used for?!
                         redirection_uri: 'https://lab-pki.swisscom.com/callback'
                 }
-		// What is actually the redirection uri used for?!
 
                 var options = {
-                        url: config.tokenServiceUrl,
+                        url: process.env.TOKEN_SERVICE | 'https://account-d.docusign.com/oauth/token',
                         method: 'POST',
                         headers: {
                                 'Authorization': 'Basic ' + secret_key_base64,
