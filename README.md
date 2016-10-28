@@ -1,4 +1,4 @@
-DocuSign Connector for All-In Signing Service.
+## DocuSign Connector for All-In Signing Service.
 
 The connector functionality includes On-Demand signatures with Declaration of Will. Both available step-up methods are supported:
 - MobileID
@@ -33,13 +33,15 @@ The application will start automatically after the deployment is finished. The c
 The SSL configuration including the creation and future renewal of the certificate takes place automatically.
 
 For the configuration of the application, following environment variables must be set:
-KEY
-CERT
-CLAIMED_IDENTITY
-DN_SUFFIX
-LANGUAGE
-DTBD
-TOKEN_SERVICE
+KEY: the private key for authenticating against AIS in PEM format.
+CERT: the public certificate for authenticating against AIS in PEM format.
+CLAIMED_IDENTITY: the claimed identity provided by Swisscom.
+DN_SUFFIX: the Distinguished Name of the on-the-fly generated certificate. For example:
+	DN_SUFFIX='o=My Organization, c=My Country, ou=My Organizational Unit'
+LANGUAGE (Optional): the AIS language. If not set, it defaults to English.
+DTBD (Optional): the text displayed on MobileID / ConsentUrl before the name of the file to be signed and a question mark. It not set, the default is 'Do you want to sign'
+TOKEN_SERVICE: the DocuSign OAuth Token Service. If not set, the default is the demo environment:
+	https://account-d.docusign.com/oauth/token
 
 # Manual deployment:
 Install nodejs. For example, on Ubuntu 16.04 LTS: 
