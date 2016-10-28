@@ -32,6 +32,15 @@ The application will start automatically after the deployment is finished. The c
 
 The SSL configuration including the creation and future renewal of the certificate takes place automatically.
 
+For the configuration of the application, following environment variables must be set:
+KEY
+CERT
+CLAIMED_IDENTITY
+DN_SUFFIX
+LANGUAGE
+DTBD
+TOKEN_SERVICE
+
 # Manual deployment:
 Install nodejs. For example, on Ubuntu 16.04 LTS: 
 - apt-get update
@@ -40,8 +49,7 @@ Install nodejs. For example, on Ubuntu 16.04 LTS:
 Install npm dependencies:
 - npm install
 
-Please take into consideration that the configuration of a proxy or reverse-proxy will be necessary in order for the application to be accesible over the standard port 443. The connector runs locally on port 8081. An easy way to do this is to use caddy:
-
+The environment variables listed above must be set. If deploying manually, you can just modify the file dev.env provided with the source code. The environment variables included in this file are automatically set when the application is started.
 
 # Docker Image
 A docker image is available for easy integration in a customer environment.
@@ -50,12 +58,9 @@ Build the image:
 $ docker build -t swisscomtds/dsconnector .
 
 Run the image:
-$ docker run -p 8081:8081 -v /myconfigdirectory:/app/config swisscomtds/dsconnector-ais
+$ docker run -p 8081:8081 -v /myconfigdirectory:/app/config swisscomtds/dsconnector-ais 
 
-In 'myconfigdirectory' you need to include:
-- A 'ssl' folder with the AIS Account private key and keystore in .pem format (the files must have the extension .pem as well).
-- A configuration file 'configuration.js' with the AIS and DS configuration. See config/configuration.js.sample for a configuration sample.
-
+The environment variables listed above must be set for the Docker container, using the -e option.
 
 Please take into consideration that for both the manual and the docker ways, the configuration of a reverse-proxy is necessary in order for the application to be accesible over the standard port 443. The connector runs locally on port 8081. An easy way to do this is to use caddy (open-source and easy to install and configure):
 https://caddyserver.com
