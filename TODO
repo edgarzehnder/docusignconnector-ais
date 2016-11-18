@@ -5,4 +5,3 @@ Improvements:
 4. Improve Error Handling.
 5. The polling should be done by the client, the redirect to /poll bit could be implemented more nicely.
 6. Multi-threading (serve multiple simultaneous requests) capabilities of nodejs.
-7. RA Function: can we prove the e-mail of the e-mail recipient (signatore) corresponds to the registered mobile number? According to the API it does not seem possible. Check with DocuSign directly for alternatives.

@@ -187,13 +187,25 @@ function pending(responseID, counter) {
 
 function getOptions(length, poll) {
 
-	var fs = require('fs');
+	//var fs = require('fs');
 	var url = require('url');
 
 	// AIs URL defaults to production but it can be overriden by an ENV variable
-	var ais = process.env.AIS?process.env.AIS:'https://ais.swisscom.ch/AIS-Server/rs/v1.0';
+	var ais = process.env.AIS?process.env.AIS:'https://ais.swisscom.com/AIS-Server/rs/v1.0';
 	var ais_url = poll ? url.parse(ais + '/pending') : url.parse(ais + '/sign');
 
+	// SSL authentication: key, certificate and CA certificate
+	var mykey = process.env.KEY;
+	var mycert = process.env.CERT;
+	var myca = process.env.CA;
+
+	//mykey=fs.readFileSync('ssl/AIS-Client-Prod-IAM_2014-2017.key');
+	//console.log("mykey: " + mykey);
+	//mycert=fs.readFileSync('ssl/AIS-Client-Prod-IAM_2014-2017.pem');
+	//console.log("mycert: " + mycert);
+	//myca=fs.readFileSync('ssl/ais-ca-ssl.pem');
+	//console.log("myca: " + myca);
+	
 	var sign_options = {
 		host: ais_url.hostname,
 		port: 443,
@@ -204,9 +216,9 @@ function getOptions(length, poll) {
 			"Content-Length": length,
 			"Accept": "application/json"
 		},
-		key: process.env.KEY,
-		cert: process.env.CERT,
-		ca: process.env.CA
+		key: mykey,
+		cert: mycert,
+		ca: myca	
 	};
 	return sign_options;
 }
@@ -214,8 +226,8 @@ function getOptions(length, poll) {
 function getJsonRequest(claimedIdentity, dn, phone, name, hash) {
 
 	var now = new Date();
-	var dtbd = process.env.DTBD | 'Do you want to sign';
-	var language = process.env.LANGUAGE | 'en';
+	var dtbd = process.env.DTBD?process.env.DTBD:'Do you want to sign';
+	var language = process.env.STEP_UP_LANG?process.env.STEP_UP_LANG:'en';
 
 	return {
 	  "SignRequest": {

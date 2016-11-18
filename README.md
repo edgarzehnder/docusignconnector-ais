@@ -33,15 +33,16 @@ The application will start automatically after the deployment is finished. The c
 The SSL configuration including the creation and future renewal of the certificate takes place automatically.
 
 For the configuration of the application, following environment variables must be set:
-KEY: the private key for authenticating against AIS in PEM format.
-CERT: the public certificate for authenticating against AIS in PEM format.
-CLAIMED_IDENTITY: the claimed identity provided by Swisscom.
-DN_SUFFIX: the Distinguished Name of the on-the-fly generated certificate. For example:
-	DN_SUFFIX='o=My Organization, c=My Country, ou=My Organizational Unit'
-LANGUAGE (Optional): the AIS language. If not set, it defaults to English.
-DTBD (Optional): the text displayed on MobileID / ConsentUrl before the name of the file to be signed and a question mark. It not set, the default is 'Do you want to sign'
-TOKEN_SERVICE: the DocuSign OAuth Token Service. If not set, the default is the demo environment:
-	https://account-d.docusign.com/oauth/token
+- KEY: the private key for authenticating against AIS in PEM format.
+- CERT: the public certificate for authenticating against AIS in PEM format.
+- CA: the public certificate of the CA issuing the signing certificates (Swisscom Sapphire CA 2).
+- CLAIMED_IDENTITY: the claimed identity provided by Swisscom.
+- DN_SUFFIX: which fields to include in the Distinguished Name of the on-the-fly generated certificate. 
+For example:
+DN_SUFFIX='o=My Organization, c=My Country, ou=My Organizational Unit'
+- CN_PREFIX (Optional): as common name, the name of the user will be set. A CN_PREFIX can optionally be defined.
+- STEP_UP_LANG (Optional): the AIS language (MobileID/PwdOTP texts displayed to the user). If not set, it defaults to English.
+- DTBD (Optional): the text displayed on MobileID / ConsentUrl before the name of the file to be signed and a question mark. It not set, the default is 'Do you want to sign'
 
 # Manual deployment:
 Install nodejs. For example, on Ubuntu 16.04 LTS: 
@@ -60,7 +61,7 @@ Build the image:
 $ docker build -t swisscomtds/dsconnector .
 
 Run the image:
-$ docker run -p 8081:8081 -v /myconfigdirectory:/app/config swisscomtds/dsconnector-ais 
+$ docker run -p 8081:8081 -e <environment variables>
 
 The environment variables listed above must be set for the Docker container, using the -e option.
 
