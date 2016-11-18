@@ -52,7 +52,7 @@ Install nodejs. For example, on Ubuntu 16.04 LTS:
 Install npm dependencies:
 - npm install
 
-The environment variables listed above must be set. If deploying manually, you can just modify the file dev.env provided with the source code. The environment variables included in this file are automatically set when the application is started.
+The environment variables listed above must be set. If deploying manually you can create a .env file and configure the environment variables inside. These variables are automatically set when the application is started. 
 
 # Docker Image
 A docker image is available for easy integration in a customer environment.
@@ -60,8 +60,15 @@ A docker image is available for easy integration in a customer environment.
 Build the image:
 $ docker build -t swisscomtds/dsconnector .
 
-Run the image:
-$ docker run -p 8081:8081 -e <environment variables>
+Run the image, mapping the port and setting the environment variables. For example:
+$ docker run -p 8081:8081 \
+        -e CLAIMED_IDENTITY="AP_ID:OnDemand-Advanced" \
+        -e CN_PREFIX="TEST" \
+        -e DN_SUFFIX="o=My Organization, c=My Country, ou=My Organizational Unit" \
+        -e KEY="$(openssl rsa -in ssl/mycert.key -inform pem)" \
+        -e CERT="$(openssl x509 -in ssl/mycert.pem -inform pem)" \
+        -e CA="$(openssl x509 -in ssl/myca.pem -inform pem)" \
+        swisscomtds/dsconnector
 
 The environment variables listed above must be set for the Docker container, using the -e option.
 

@@ -27,8 +27,6 @@ app.get('/dsconnector', function(req, res) {
 
 	result.then(function(result) {
 	
-		console.log("Authorization result: " + result);
-		
 		console.log("=====> POST request getSignInfo() to DocuSign...");
 	
 		// Parse response and extract access token
