@@ -21,7 +21,7 @@ function getOAuthToken(authorization_code) {
                 }
 
                 var options = {
-                        url: process.env.TOKEN_SERVICE | 'https://account-d.docusign.com/oauth/token',
+                        url: 'https://account-d.docusign.com/oauth/token',
                         method: 'POST',
                         headers: {
                                 'Authorization': 'Basic ' + secret_key_base64,
@@ -29,6 +29,7 @@ function getOAuthToken(authorization_code) {
                         },
                         body: qs.stringify(my_body)
                 };
+//		console.log("Options: " + util.inspect(options));
 
 		// POST request to Token Service to exchange authorization code through access token
                 var my_request = request(options, function(error, response, body) {
@@ -39,7 +40,7 @@ function getOAuthToken(authorization_code) {
                                 reject(body);
                         }
                 });	
-		debug('Authentication request: %s', my_request);
+//		console.log('Authentication request: ' +  util.inspect(my_request));
         });
 };
 

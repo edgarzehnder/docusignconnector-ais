@@ -50,6 +50,9 @@ function signpwdotp(info) {
 
 			// Return consent url	
 			resolve(pending_response);
+		
+		}, function(error) {
+			reject(error);
 		});
 	});
 }
@@ -66,26 +69,30 @@ function sign(info) {
 		// console.log("- Hash: " + hash);
 		var name = body.documents[0].name;
 		// console.log("- Name: " + name);
-	
-		// Credentials type "sms" included in the user object	
-		var phone = body.user.credentials[0].value;
-			
-		// Phone is undefined: hard-code test one (see above info_tmp)	
-		if (phone == undefined) {
-			reject("Phone Number undefined!");	
-	
-		} else {
-			// Number is a string in the form "+41 79 253 37 29"
-			// Remove blanks
-			phone = phone.replace(/\s/g, '');
-			// Remove the '+'
-			phone = phone.replace(/\+/g, '');
-		}
+
+		// Credentials type "sms" SHOULD BE included in the user object
+                var phone;
+                if (body.user.hasOwnProperty('credentials') && body.user.credentials.length > 0) {
+                        phone = body.user.credentials[0].value;
+
+                        // Number is a string in the form "+41 79 123 45 67"
+                        // Remove blanks
+                        phone = phone.replace(/\s/g, '');
+                        // Remove the '+'
+                        phone = phone.replace(/\+/g, '');
+
+                } else {
+                        // phone is undefined
+                        if (process.env.NODE_ENV == "development") {
+                                // Development hack: docusign is not sending the phone, I can set it as an ENV
+                                phone = process.env.PHONE;
+                                console.log("Development: phone not delivered in response and therefore set to: " + phone);
+                        }
+                }
 
 		// Build the DN, with the user name in the DS response and the configured values
 		var prefix = process.env.CN_PREFIX? process.env.CN_PREFIX + ' ' : '';	
-		var suffix = process.env.DN_SUFFIX | 'o=My organization, c=My Country, ou=My Organizational Unit';
-		var dn = 'cn=' + prefix + body.user.displayName + ', ' + suffix;
+		var dn = 'cn=' + prefix + body.user.displayName + ', ' + process.env.DN_SUFFIX;
 	
 		var json = getJsonRequest(process.env.CLAIMED_IDENTITY, dn, phone, name, hash);
 		var data_length = Buffer.byteLength(JSON.stringify(json));	
@@ -183,7 +190,9 @@ function getOptions(length, poll) {
 	var fs = require('fs');
 	var url = require('url');
 
-	var ais_url = poll ? url.parse(process.env.AIS + '/pending') : url.parse(process.env.AIS + '/sign');
+	// AIs URL defaults to production but it can be overriden by an ENV variable
+	var ais = process.env.AIS?process.env.AIS:'https://ais.swisscom.ch/AIS-Server/rs/v1.0';
+	var ais_url = poll ? url.parse(ais + '/pending') : url.parse(ais + '/sign');
 
 	var sign_options = {
 		host: ais_url.hostname,
@@ -195,9 +204,9 @@ function getOptions(length, poll) {
 			"Content-Length": length,
 			"Accept": "application/json"
 		},
-		key: fs.readFileSync(process.env.KEY),
-		cert: fs.readFileSync(process.env.CERT),
-		ca: fs.readFileSync(process.env.CA)
+		key: process.env.KEY,
+		cert: process.env.CERT,
+		ca: process.env.CA
 	};
 	return sign_options;
 }
