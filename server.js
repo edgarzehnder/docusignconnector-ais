@@ -8,6 +8,7 @@ var app = express();
 var host = process.env.HOST || '0.0.0.0';
 var port = process.env.PORT || '8081';
 var util = require('util');
+var dotenv = require('dotenv');
 
 var info;
 var user;
@@ -18,7 +19,8 @@ var api;
 app.get('/dsconnector', function(req, res) {
 
 	// Environment variables for development
-	require('dotenv').load();
+	dotenv.config({silent:true});
+	dotenv.load();
 
 	console.log('/dsconnector');
 

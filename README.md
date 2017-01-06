@@ -33,6 +33,8 @@ The application will start automatically after the deployment is finished. The c
 The SSL configuration including the creation and future renewal of the certificate takes place automatically.
 
 For the configuration of the application, following environment variables must be set:
+- INTEGRATOR_KEY: provided by DocuSign and unique for each TSP connector.
+- SECRET_KEY: provided by DocuSign and unique for each TSP connector.
 - KEY: the private key for authenticating against AIS in PEM format.
 - CERT: the public certificate for authenticating against AIS in PEM format.
 - CA: the public certificate of the CA issuing the signing certificates (Swisscom Sapphire CA 2).
