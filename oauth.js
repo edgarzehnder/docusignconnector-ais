@@ -16,7 +16,7 @@ function getOAuthToken(authorization_code) {
 		// Secret_key and integratior_key are configured as ENV variables
 		//var secret_key_base64 = new Buffer('3dacc143-d581-4bf8-b433-6b487f33876d:3e29f10c-e05e-451f-8526-613cb326acbe').toString('base64');
 		var secret_key_base64 = new Buffer(integrator_key + ':' + secret_key).toString('base64');
-		console.log("Key: " + secret_key_base64);
+		//console.log("Key: " + secret_key_base64);
 
                 var my_body = {
                         grant_type: 'authorization_code',

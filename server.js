@@ -18,11 +18,13 @@ var api;
 // First redirect: DocuSign Authorization Service redirects user request with authorization code 
 app.get('/dsconnector', function(req, res) {
 
+
 	// Environment variables for development
 	dotenv.config({silent:true});
 	dotenv.load();
 
 	console.log('/dsconnector');
+
 
 	//  OAuth2 Authentication
 	var result = dsoauth.getOAuthToken(req.query.code);
@@ -65,16 +67,19 @@ app.get('/dsconnector', function(req, res) {
 
 	}).then(function(result) {
 
+		// Connector URL set as environment variable (default: development)
+		var tsp_url = process.env.TSP_URL || "https://lab-pki.swisscom.com";
+		
 		// If PwdOTP, open consentURL
 		// Redirect to polling location
 		if (result.url != "NONE") {
 			console.log("PwdOTP");
-			var html = "<script>window.open('" + result.url + "'); window.location='https://lab-pki.swisscom.com/poll?id=" + result.id + "'</script>";
+			var html = "<script>window.open('" + result.url + "'); window.location='https:// " + tsp_url + "/poll?id=" + result.id + "'</script>";
 			res.end(html);
 
 		} else {
 			res.writeHead(302, {
-				'Location': 'https://lab-pki.swisscom.com/poll?id=' + result.id	
+				'Location': tsp_url + '/poll?id=' + result.id	
 			});
 			res.end();
 		}
@@ -99,7 +104,7 @@ app.get('/poll', function(req, res) {
 
 		var signature = result;
 
-		console.log(signature);
+		// console.log(signature);
 
 		// POST completeSignHashInfo
 		var result = dsrequest.postCompleteSignInfo(accessToken, api, signature, info);	

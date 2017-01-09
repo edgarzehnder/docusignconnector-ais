@@ -199,11 +199,8 @@ function getOptions(length, poll) {
 	var mycert = process.env.CERT;
 	var myca = process.env.CA;
 
-	//mykey=fs.readFileSync('ssl/AIS-Client-Prod-IAM_2014-2017.key');
 	//console.log("mykey: " + mykey);
-	//mycert=fs.readFileSync('ssl/AIS-Client-Prod-IAM_2014-2017.pem');
 	//console.log("mycert: " + mycert);
-	//myca=fs.readFileSync('ssl/ais-ca-ssl.pem');
 	//console.log("myca: " + myca);
 	
 	var sign_options = {

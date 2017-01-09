@@ -22,7 +22,7 @@ function getUserInfo(accessToken, api) {
                         }
                        // body: JSON.stringify(post_body)
                 }
-		console.log("Request getUserInfo(): " + util.inspect(options));
+		// console.log("Request getUserInfo(): " + util.inspect(options));
 
                 request(options, function(error, response, body) {
 
@@ -62,7 +62,7 @@ function getSignInfo(accessToken, api) {
 			body: JSON.stringify(post_body)
 		}
 
-		console.log("Request: " + util.inspect(options));
+		// console.log("Request: " + util.inspect(options));
 
 		// GET request to DS API	
 		request(options, function(error, response, body) {

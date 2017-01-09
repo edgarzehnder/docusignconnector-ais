@@ -5,6 +5,9 @@ MAINTAINER Eva Ramon <eva.ramon@swisscom.com>
 RUN mkdir -p /app
 WORKDIR /app
 
+# Install openssl
+# TODO 
+
 # Bundle app source 
 COPY package.json /app/
 COPY oauth.js /app/
