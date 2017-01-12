@@ -1,6 +1,6 @@
 Improvements:
-1. The connector only accepts one document - extend for several ones. 
-2. User specific AIS configuration account (multi-customer).
+1. The connector only accepts one document - extend for several ones. Both the DS API and AIS support the signing of several documents simultaneously - it's just not implemented in the connector yet.
+2. With the newest API, DocuSign returns a "CustomerID" which the connector should check before starting the signing process. The check is made against an additional ENV variable which needs to be configured for each customer (e.g. with each instance). If the ID does not match, the connector returns an error.
 3. Improve Logging (INFO and DEBUG modes - log files instead of using the console).
 4. Improve Error Handling.
 5. The polling should be done by the client, the redirect to /poll bit could be implemented more nicely.
