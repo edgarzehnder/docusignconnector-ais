@@ -11,19 +11,19 @@ Improvements
 3. Improve Logging (INFO and DEBUG modes - log files instead of using the console).
 
 > I suggest using the [Winston](https://github.com/winstonjs/winston) framework for loggin purposes.
-Ok
+>> Ok
 
 4. Improve Error Handling.
 
 > Suggestion is to fail early if contracts are not met (some 400-403 errors) and return gateway errors (502-504) if backend is unable to process the request (programming mistakes will occur ;-).
-Sounds good
+>> Sounds good
 
 5. The polling should be done by the client, the redirect to /poll bit could be implemented more nicely.
 
 > Maybe there's a channce to use Server-Sent Events (SSE) which is supported by all modern browsers. Maybe for IE there should be a fallback solution.
-I'll check about this one...
+>> I'll check about this one... I'll take a look at SSE.
 
 6. Multi-threading (serve multiple simultaneous requests) capabilities of nodejs.
 
 > Node.JS is single-threaded by nature. Incoming requests are handled by asynchronouus call-backs, so the event loop returns immediately to handle further incoming requests.
-Good, so we don't need to do anything about this one.
+>> Good, so we don't need to do anything about this one.
