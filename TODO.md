@@ -27,3 +27,6 @@ Improvements
 
 > Node.JS is single-threaded by nature. Incoming requests are handled by asynchronouus call-backs, so the event loop returns immediately to handle further incoming requests.
 >> Good, so we don't need to do anything about this one.
+
+7. Monitoring
+Details to be clarified yet.
