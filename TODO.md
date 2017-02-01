@@ -1,7 +1,7 @@
 Improvements
 ------------
 
-1. The connector only accepts one document - extend for several ones. Both the DS API and AIS support the signing of several documents simultaneously - it's just not implemented in the connector yet.
+1. The connector only accepts one document - extend for several ones. Both the DS API and AIS support the signing of several documents simultaneously - it's just not implemented in the connector yet. DONE 20170201.
 
 > Should be easy with Multipart/MIME?
 >> Not necessary. The call to gethashsessioninfo returns an array of documents. The current code just takes into consideration the first element of the array (see TSP API Integration documentation). The AIS JSON interface accepts in the sign request call more than one document (see All-In Signing Reference Guide 4.6 and 5.3.2) - "batch").
