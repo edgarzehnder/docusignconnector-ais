@@ -103,7 +103,10 @@ app.get('/poll', function(req, res) {
 	result.then(function(result) {
 
 		var signature = result;
-
+	
+		// POST completeSignHashInfo
+         	result = dsrequest.postCompleteSignInfo(accessToken, api, signature, info);
+		
 		// console.log(signature);
 
 		// POST completeSignHashInfo
@@ -111,11 +114,14 @@ app.get('/poll', function(req, res) {
 
 		result.then(function(result) {
 	
-			console.log(result);
+			// console.log(result);
 	
 			// Redirect to post-signing URL
 			var redirectionUrl = JSON.parse(result).redirectionUrl;
-			// console.log("Redirection URL: " + redirectionUrl);	
+			console.log("Redirection URL: " + redirectionUrl);	
+	
+			// TODO Second time: the redirection hangs, the console.log
+			// above is not displayed on the console
 			res.writeHead(302, {
 				'Location': redirectionUrl
 			});

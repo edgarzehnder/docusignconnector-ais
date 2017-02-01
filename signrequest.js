@@ -63,12 +63,8 @@ function sign(info) {
 
 
 		var body = JSON.parse(info);
-		// console.log("Body: " + util.inspect(body));
-
 		var hash = body.documents[0].data;
-		// console.log("- Hash: " + hash);
 		var name = body.documents[0].name;
-		// console.log("- Name: " + name);
 
 		// Credentials type "sms" SHOULD BE included in the user object
                 var phone;
@@ -81,20 +77,23 @@ function sign(info) {
                         // Remove the '+'
                         phone = phone.replace(/\+/g, '');
 
-                } else {
-                        // phone is undefined
-                        if (process.env.NODE_ENV == "development") {
+       //         } else if (process.env.NODE_ENV == "development") {
                                 // Development hack: docusign is not sending the phone, I can set it as an ENV
-                                phone = process.env.PHONE;
-                                console.log("Development: phone not delivered in response and therefore set to: " + phone);
-                        }
+        //                        phone = process.env.PHONE;
+         //                       console.log("Development: phone not delivered in response and therefore set to: " + phone);
+                } else {
+			reject("missing user's mobile number in DocuSign request. The signature can't be issued.");
                 }
 
 		// Build the DN, with the user name in the DS response and the configured values
 		var prefix = process.env.CN_PREFIX? process.env.CN_PREFIX + ' ' : '';	
 		var dn = 'cn=' + prefix + body.user.displayName + ', ' + process.env.DN_SUFFIX;
-	
-		var json = getJsonRequest(process.env.CLAIMED_IDENTITY, dn, phone, name, hash);
+
+		// Support for multi-document (old getJsonRequest() supported only one document)
+		//var json = getJsonRequest(process.env.CLAIMED_IDENTITY, dn, phone, name, hash);
+		var json = getSignRequest(process.env.CLAIMED_IDENTITY, dn, phone, body.documents);
+
+		// console.log(json);
 		var data_length = Buffer.byteLength(JSON.stringify(json));	
 		var sign_options = getOptions(data_length, false);
 
@@ -147,16 +146,19 @@ function pending(responseID, counter) {
 					var sign_response = sign_response_json.SignResponse;
 					var pending_result = sign_response.Result.ResultMajor;
 
+					console.log(util.inspect(sign_response_json, false, null));
+
 					// TODO Check if error
 					if (pending_result != pending_string) {
 						if (pending_result != success_string) {
 							// No success and no pending: error
-							console.log(util.inspect(sign_response_json));	
+							//console.log(util.inspect(sign_response_json));	
 							reject("Error: " + sign_response.Result.ResultMinor);
 						} else {
 							// Success
 							console.log("Success!");
-							resolve(sign_response.SignatureObject.Base64Signature.$);
+							//resolve(sign_response.SignatureObject.Base64Signature.$);
+							resolve(sign_response.SignatureObject);
 						}
 					
 					} else {
@@ -197,11 +199,13 @@ function getOptions(length, poll) {
 	// SSL authentication: key, certificate and CA certificate
 	var mykey = process.env.KEY;
 	var mycert = process.env.CERT;
+	//var fs = require('fs');
+	//var myca= fs.readFileSync('ssl/new-pp-ca.pem');	
 	var myca = process.env.CA;
 
 	//console.log("mykey: " + mykey);
 	//console.log("mycert: " + mycert);
-	//console.log("myca: " + myca);
+//	console.log("myca: " + myca);
 	
 	var sign_options = {
 		host: ais_url.hostname,
@@ -215,7 +219,7 @@ function getOptions(length, poll) {
 		},
 		key: mykey,
 		cert: mycert,
-		ca: myca	
+		ca: myca
 	};
 	return sign_options;
 }
@@ -263,6 +267,72 @@ function getJsonRequest(claimedIdentity, dn, phone, name, hash) {
 	    }
 	  }
 	}
+}
+
+function getSignRequest(claimedIdentity, dn, phone, documents) {
+
+	var dtbd = process.env.DTBD?process.env.DTBD:'Do you want to sign';
+	var language = process.env.STEP_UP_LANG?process.env.STEP_UP_LANG:'en';
+
+	// Name of the document displayed if only one document,
+	// otherwise the number of documents is displayed
+	var name;
+	if (documents.length == 1) {
+		name = documents[0].name;
+	} else {
+		// Multidocument
+		name = "" + documents.length + " documents";
+	}
+	
+	// Request (without input documents)
+	var sign_request = {
+          "SignRequest": {
+            "@RequestID": dateFormat(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+            "@Profile": "http://ais.swisscom.ch/1.1",
+            "OptionalInputs": {
+              "ClaimedIdentity": {
+                "Name": claimedIdentity
+              },
+              "SignatureType": "urn:ietf:rfc:3369",
+              "AdditionalProfile": [
+                        "http://ais.swisscom.ch/1.0/profiles/ondemandcertificate",
+                        "urn:oasis:names:tc:dss:1.0:profiles:asynchronousprocessing",
+                        "http://ais.swisscom.ch/1.1/profiles/redirect"
+                ],
+              "sc.CertificateRequest": {
+                                "sc.DistinguishedName": dn,
+                                "sc.StepUpAuthorisation": {
+                                        "sc.Phone": {
+                                                "sc.MSISDN": phone,
+                                                "sc.Message": dtbd + " " +  name + "?",
+                                                "sc.Language": language
+                                        }
+                                }
+                        },
+              "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
+              "sc.AddRevocationInformation": {"@Type": "BOTH"}
+            },
+	    "InputDocuments": {
+		"DocumentHash": []
+	    }
+          }
+        }
+
+	// Additional Profile if batch request
+	if (documents.length > 1) {
+       		sign_request.SignRequest.OptionalInputs.AdditionalProfile[3] = "http://ais.swisscom.ch/1.0/profiles/batchprocessing";
+	}
+
+	// InputDocuments
+	for (var i = 0; i < documents.length; i++) {
+       
+		sign_request.SignRequest.InputDocuments.DocumentHash[i] = {
+			"@ID": documents[i].documentId,
+			"dsig.DigestMethod": { "@Algorithm": "http://www.w3.org/2001/04/xmlenc#sha256" },
+			"dsig.DigestValue": documents[i].data
+        	} 
+	}
+	return sign_request;
 }
 
 function getPendingJsonRequest(claimedIdentity, responseID) {

@@ -84,25 +84,59 @@ function postCompleteSignInfo(accessToken, api, signature, info) {
 
 	return new Promise(function(resolve, reject) {
 
-		// console.log("---> accessToken: " + accessToken);
-		// console.log("---> api: " + api);
-		// console.log("---> signature: " + signature);
-		// console.log("info: " + info);
-
-		var json = JSON.parse(info);
-
 		if (accessToken == 'undefined' || info == 'undefined') {
 			reject("OAuth access token or POST info undefined.");
 		}
+		
+		if (signature.hasOwnProperty('Base64Signature')) {
+
+		} 
+
+
+
+		var json = JSON.parse(info);
 
 		var post_body = {
+			'documentUpdateInfos': []
+			/*	
 			'documentUpdateInfos': [ 
 				{
 				'data': signature,
 				'documentId': json.documents[0].documentId,
 				'returnFormat': 'CMS'
 				}
+			]*/
+		}
+
+		// Multi-document support
+		if (json.documents.length == 1) {
+			// One document
+			post_body.documentUpdateInfos = [
+				{
+				'name': json.documents[0].name,
+                                'data': signature.Base64Signature.$,
+                                'documentId': json.documents[0].documentId,
+                                'returnFormat': 'CMS'
+                                }
 			]
+	
+		} else {
+
+			// Several documents
+			signatures = signature.Other["sc.SignatureObjects"]["sc.ExtendedSignatureObject"];
+
+			//console.log("Signatures: " + util.inspect(signatures, 'false', null));
+	
+			for (var i = 0; i < json.documents.length; i++) {
+				post_body.documentUpdateInfos[i] = {
+					'name': json.documents[i].name,
+					'data': signatures[i].Base64Signature.$,
+					'documentId': json.documents[i].documentId,
+					'returnFormat': 'CMS' 
+				}	
+			}
+			//console.log("Post_body: " + util.inspect(post_body));
+		
 		}
 
 		var options = {
