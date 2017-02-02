@@ -56,7 +56,7 @@ app.get('/dsconnector', function(req, res) {
 	}).then(function(result) {
 
 		console.log("=====> Sign request (async) to All-In Signing...");
-		console.log(result);
+		// console.log(result);
 	
 		// AIS Signing Request	
 		return signrequest.signpwdotp(info); 
@@ -73,16 +73,18 @@ app.get('/dsconnector', function(req, res) {
 		// If PwdOTP, open consentURL
 		// Redirect to polling location
 		if (result.url != "NONE") {
-			console.log("PwdOTP");
+			console.log("Using PwdOTP as Declaration of Will method.");
 			var html = "<script>window.open('" + result.url + "'); window.location='https:// " + tsp_url + "/poll?id=" + result.id + "'</script>";
 			res.end(html);
 
 		} else {
+			console.log("Using MID as Declaration of Will method.");
 			res.writeHead(302, {
 				'Location': tsp_url + '/poll?id=' + result.id	
 			});
 			res.end();
 		}
+
 	}, function(error) {
 		console.log("Error: " + error);
 		res.send("Error: " + error);
@@ -110,22 +112,23 @@ app.get('/poll', function(req, res) {
 		// console.log(signature);
 
 		// POST completeSignHashInfo
-		var result = dsrequest.postCompleteSignInfo(accessToken, api, signature, info);	
+		// var result = dsrequest.postCompleteSignInfo(accessToken, api, signature, info);	
 
 		result.then(function(result) {
 	
-			// console.log(result);
-	
 			// Redirect to post-signing URL
 			var redirectionUrl = JSON.parse(result).redirectionUrl;
-			console.log("Redirection URL: " + redirectionUrl);	
-	
-			// TODO Second time: the redirection hangs, the console.log
-			// above is not displayed on the console
+			console.log("Redirecting to " + redirectionUrl);	
+			
 			res.writeHead(302, {
 				'Location': redirectionUrl
 			});
 			res.end();
+
+		}, function(error) {
+			console.log("Error: " + error);
+			res.write("Error: " + error);
+			res.send();
 		});	
 	});
 

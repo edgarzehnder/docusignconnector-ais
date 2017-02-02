@@ -21,10 +21,10 @@ function signpwdotp(info) {
 
 		result.then(function(result) {
 
-			console.log(util.inspect(result));
+			// console.log(util.inspect(result));
 
 			if (result.SignResponse.Result.ResultMajor == error_string) {
-				console.log(result.SignResponse.Result.ResultMinor);
+				// console.log(result.SignResponse.Result.ResultMinor);
 				reject(result.SignResponse.Result.ResultMinor);
 			}
 			
@@ -36,8 +36,7 @@ function signpwdotp(info) {
 			
 
 			if (optional_outputs.hasOwnProperty('sc.StepUpAuthorisationInfo')) {
-				
-				console.log("Using PwdOTP for Declaration of Will.");
+				// console.log("Using PwdOTP for Declaration of Will.");
 				consent_url = result.SignResponse.OptionalOutputs['sc.StepUpAuthorisationInfo']['sc.Result']['sc.ConsentURL'];
 			} else {
 				consent_url = "NONE";
@@ -146,9 +145,8 @@ function pending(responseID, counter) {
 					var sign_response = sign_response_json.SignResponse;
 					var pending_result = sign_response.Result.ResultMajor;
 
-					console.log(util.inspect(sign_response_json, false, null));
+					// console.log(util.inspect(sign_response_json, false, null));
 
-					// TODO Check if error
 					if (pending_result != pending_string) {
 						if (pending_result != success_string) {
 							// No success and no pending: error
@@ -164,7 +162,7 @@ function pending(responseID, counter) {
 					} else {
 						// Pending
 						if (counter == max_count) {
-							console.log("Timeout!");
+							//console.log("Timeout!");
 							reject("Timeout!");	
 						} else {
 							console.log("Pending... counter=" + counter);

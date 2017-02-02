@@ -26,13 +26,13 @@ function getUserInfo(accessToken, api) {
 
                 request(options, function(error, response, body) {
 
-                        console.log("-----> DS Response GET userInfo " + body);
+                        console.log(body);
 
                         if (!error && response.statusCode == 200) {
                                 // console.log(body);
                                 resolve(body);
                         } else {
-                                console.log(error);
+                                // console.log(error);
                                 reject(error);
                         }
                 });
@@ -67,13 +67,13 @@ function getSignInfo(accessToken, api) {
 		// GET request to DS API	
 		request(options, function(error, response, body) {
 		
-			console.log("Body: " + body);
+			// console.log("Body: " + body);
 	
 			if (!error && response.statusCode == 200) {
 				// console.log(body);
 				resolve(body);
 			} else {
-				console.log(error);
+				// console.log(error);
 				reject(error);
 			}
 		});
@@ -88,12 +88,6 @@ function postCompleteSignInfo(accessToken, api, signature, info) {
 			reject("OAuth access token or POST info undefined.");
 		}
 		
-		if (signature.hasOwnProperty('Base64Signature')) {
-
-		} 
-
-
-
 		var json = JSON.parse(info);
 
 		var post_body = {
