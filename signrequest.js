@@ -4,7 +4,11 @@ var https = require('https');
 var Promise = require('promise');
 var pending_string = "urn:oasis:names:tc:dss:1.0:profiles:asynchronousprocessing:resultmajor:Pending";
 var success_string = "urn:oasis:names:tc:dss:1.0:resultmajor:Success";
-var error_string = "urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError";
+var error_strings = [
+	"urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError",
+	"urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError",
+	"http://ais.swisscom.ch/1.0/resultmajor/SubsystemError"
+]
 var sleep = require('sleep-async')();
 var util = require('util');
 var dateFormat = require('date-format');
@@ -21,11 +25,16 @@ function signpwdotp(info) {
 
 		result.then(function(result) {
 
-			// console.log(util.inspect(result));
 
-			if (result.SignResponse.Result.ResultMajor == error_string) {
-				// console.log(result.SignResponse.Result.ResultMinor);
-				reject(result.SignResponse.Result.ResultMinor);
+			if (error_strings.indexOf(result.SignResponse.Result.ResultMajor) > -1) {	
+
+				console.log(util.inspect(JSON.stringify(result)));
+
+				var error = result.SignResponse.Result.ResultMajor + " -> " +
+					result.SignResponse.Result.ResultMinor + " -> " + 
+					result.SignResponse.Result.ResultMessage.$;
+					
+				reject(error);
 			}
 			
 			var response_id = result.SignResponse.OptionalOutputs['async.ResponseID'];
@@ -36,7 +45,6 @@ function signpwdotp(info) {
 			
 
 			if (optional_outputs.hasOwnProperty('sc.StepUpAuthorisationInfo')) {
-				// console.log("Using PwdOTP for Declaration of Will.");
 				consent_url = result.SignResponse.OptionalOutputs['sc.StepUpAuthorisationInfo']['sc.Result']['sc.ConsentURL'];
 			} else {
 				consent_url = "NONE";
@@ -60,6 +68,7 @@ function sign(info) {
 
 	return new Promise(function(resolve, reject) {
 
+		console.log(util.inspect(info));
 
 		var body = JSON.parse(info);
 		var hash = body.documents[0].data;
@@ -90,8 +99,10 @@ function sign(info) {
 
 		// Support for multi-document (old getJsonRequest() supported only one document)
 		//var json = getJsonRequest(process.env.CLAIMED_IDENTITY, dn, phone, name, hash);
+		//console.log(util.inspect(body.documents, false, null));
 		var json = getSignRequest(process.env.CLAIMED_IDENTITY, dn, phone, body.documents);
-
+		//console.log(json);
+		
 		// console.log(json);
 		var data_length = Buffer.byteLength(JSON.stringify(json));	
 		var sign_options = getOptions(data_length, false);
@@ -104,9 +115,17 @@ function sign(info) {
                 	});
 
                 	sign_res.on('end', function() {
+				// console.log(util.inspect(body, false, null));
 				resolve(JSON.parse(body));
+
+			}, function(error) {
+				console.log("ERROR: " + error);
+				reject(error);	
 			});        	
 
+		}, function(error) {
+			console.log("ERROR: " + error);
+			reject(error);
 		});
 
 		// set socket timeout to 300000 miliseconds
@@ -118,6 +137,10 @@ function sign(info) {
 		});
 		sign_req.write(JSON.stringify(json));
 		sign_req.end();
+	
+	}, function(error) {
+		console.log("ERROR: " + error);
+		reject(error);
 	});
 }
 
@@ -170,6 +193,10 @@ function pending(responseID, counter) {
 						}
 					}
 				});
+
+			}, function(error) {
+				console.log("ERROR: " + error);
+				reject(error);
 			});
 
 			// set socket timeout to 300000 miliseconds
@@ -182,6 +209,10 @@ function pending(responseID, counter) {
 			pending_req.write(JSON.stringify(json));
 			pending_req.end();
 		});
+
+	}, function(error) {
+		console.log("ERROR: " + error);
+		reject(error);
 	});
 }
 
@@ -201,9 +232,11 @@ function getOptions(length, poll) {
 	//var myca= fs.readFileSync('ssl/new-pp-ca.pem');	
 	var myca = process.env.CA;
 
-	//console.log("mykey: " + mykey);
-	//console.log("mycert: " + mycert);
-//	console.log("myca: " + myca);
+	/*
+	console.log("mykey: " + mykey);
+	console.log("mycert: " + mycert);
+	console.log("myca: " + myca);
+	*/
 	
 	var sign_options = {
 		host: ais_url.hostname,
