@@ -4,8 +4,6 @@ The connector functionality includes On-Demand signatures with Declaration of Wi
 - MobileID
 - Password and OTP authentication
 
-NOTE: the connector application server listens on port 8081. Use a proxy to listen on a standard port (e.g 443) and to set-up SSL.
-
 # Deploy on the Swisscom Application Cloud:
 Register on the Swisscom Developer / Swisscom Application Cloud and create an Organization and a Space. Further information:
 https://developer.swisscom.com/
@@ -63,10 +61,7 @@ Install npm dependencies:
 The environment variables listed above must be set. If deploying manually you can create a .env file and configure the environment variables inside. These variables are automatically set when the application is started. 
 
 # Docker Image
-A docker image is available for easy integration in a customer environment.
-
-Build the image:
-$ docker build -t swisscomtds/dsconnector .
+A docker image is publicily available in Dockerhub for easy integration in a customer environment.
 
 Run the image, mapping the port and setting the environment variables. For example:
 $ docker run -p 8081:8081 \
