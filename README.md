@@ -64,6 +64,7 @@ The environment variables listed above must be set. If deploying manually you ca
 A docker image is publicily available in Dockerhub for easy integration in a customer environment.
 
 Run the image, mapping the port and setting the environment variables. For example:
+
 $ docker run -p 8081:8081 \
 	-e INTEGRATOR_KEY=<your integrator key> \
         -e SECRET_KEY=<your secret key> \
