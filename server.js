@@ -74,7 +74,9 @@ app.get('/dsconnector', function(req, res) {
 		// Redirect to polling location
 		if (result.url != "NONE") {
 			console.log("Using PwdOTP as Declaration of Will method.");
-			var html = "<script>window.open('" + result.url + "'); window.location='https:// " + tsp_url + "/poll?id=" + result.id + "'</script>";
+			var html = "<script>window.open('" + result.url + "'); window.location='" + tsp_url + "/poll?id=" + result.id + "'</script>";
+			//var html = "<script>window.open('" + result.url + "'); window.location='https:// " + tsp_url + "/poll?id=" + result.id + "'</script>";
+			console.log("--------> URL: " + html);
 			res.end(html);
 
 		} else {
