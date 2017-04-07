@@ -1,8 +1,12 @@
 ## DocuSign Connector for All-In Signing Service.
-
 The connector functionality includes On-Demand signatures with Declaration of Will. Both available step-up methods are supported:
 - MobileID
-- Password and OTP authentication
+-  Password and OTP authentication
+
+# What do you need before starting
+- An All-In Signing account (claimed-identity provided by Swisscom).
+- A DocuSign account linked to the URL where you plan to deploy the connector. Contact DocuSign in order to register the URL and link it to the account.
+- The URL where you plan to deploy the connector needs a public IP and a valid DNS Name.
 
 # Deploy on the Swisscom Application Cloud:
 Register on the Swisscom Developer / Swisscom Application Cloud and create an Organization and a Space. Further information:
