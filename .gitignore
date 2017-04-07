@@ -1,7 +1,4 @@
 .env
-preprod.env
-prod.env
 .dockerignore
 docker.run
 node_modules
-ssl
