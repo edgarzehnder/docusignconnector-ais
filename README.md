@@ -7,6 +7,7 @@ The connector functionality includes On-Demand signatures with Declaration of Wi
 - An All-In Signing account (claimed-identity provided by Swisscom).
 - A DocuSign account linked to the URL where you plan to deploy the connector. Contact DocuSign in order to register the URL and link it to the account.
 - The URL where you plan to deploy the connector needs a public IP and a valid DNS Name.
+- An integrator and a secret key corresponding to the registered URL (provided by DocuSign).
 
 # Deploy on the Swisscom Application Cloud:
 Register on the Swisscom Developer / Swisscom Application Cloud and create an Organization and a Space. Further information:
