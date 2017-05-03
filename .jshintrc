@@ -12,7 +12,7 @@
         "runs": false
     },
     "node": true,
-    "es5": true,
+    "esversion": 6,
     "browser": true,
     "boss": false,
     "curly": false,
