@@ -6,9 +6,9 @@ const winston = require('winston');
 // /**
 //  * ELK Integration
 //  */
-// if (process.env.name === 'production') {
+// if (process.env.NODE_ENV === 'production') {
 //     winston.add(winston.transports.Logstash, {
-//         node_name: process.env.APP_LOGGER_REMOTE_NODE_NAME,
+//         node_NODE_ENV: process.env.APP_LOGGER_REMOTE_NODE_NAME,
 //         host: process.env.APP_LOGGER_REMOTE_HOST,
 //         port: process.env.APP_LOGGER_REMOTE_PORT
 //     });
@@ -21,10 +21,10 @@ const logger = new winston.Logger({
     transports: [
         new winston.transports.Console({
             level: process.env.APP_LOGGER_LEVEL,
-            timestamp: (process.env.name === 'production'),
-            handleExceptions: (process.env.name === 'production'),
-            json: (process.env.name === 'production'),
-            colorize: (process.env.name !== 'production')
+            timestamp: (process.env.NODE_ENV === 'production'),
+            handleExceptions: (process.env.NODE_ENV === 'production'),
+            json: (process.env.NODE_ENV === 'production'),
+            colorize: (process.env.NODE_ENV !== 'production')
         })
     ],
     exitOnError: false
