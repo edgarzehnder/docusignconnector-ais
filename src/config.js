@@ -8,11 +8,11 @@ const appEnv = cfenv.getAppEnv();
 
 module.exports = {
     /**
-     * Node JS enviroment
+     * Node JS environment
      */
     env: process.env.NODE_ENV,
     /**
-     * Baisc configuration for our connector
+     * Basic configuration for our connector
      */
     app: {
         url: appEnv.url,

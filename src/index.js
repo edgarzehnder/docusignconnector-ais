@@ -1,7 +1,7 @@
 "use strict";
 
 const app = require('./app');
-const log = require('./logger');
+const log = require('./core/logger');
 const server = app.listen(app.get('port'));
 
 

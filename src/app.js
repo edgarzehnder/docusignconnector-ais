@@ -7,8 +7,8 @@ const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 const compression = require('compression');
 
-const bootstrap = require('./bootstrap');
-const log = require('./logger');
+const bootstrap = require('./core/bootstrap');
+const log = require('./core/logger');
 const docSignRouter = require('./routes/doc-sign-connector');
 const pollRouter = require('./routes/poll');
 
