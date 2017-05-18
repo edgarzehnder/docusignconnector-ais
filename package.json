@@ -27,8 +27,12 @@
   },
   "scripts": {
     "start": "node ./src/index.js",
-    "test": "./node_modules/.bin/jshint --reporter=node_modules/jshint-stylish ./src/**.js"
+    "lint": "./node_modules/.bin/jshint --reporter=node_modules/jshint-stylish ./src",
+    "test": "./node_modules/.bin/jest"
   },
   "author": "",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "jest": {
+    "verbose": true
+  }
 }

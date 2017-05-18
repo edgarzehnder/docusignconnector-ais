@@ -9,7 +9,7 @@ const compression = require('compression');
 
 const bootstrap = require('./core/bootstrap');
 const log = require('./core/logger');
-const docSignRouter = require('./routes/doc-sign-connector');
+const docuSignRouter = require('./routes/docu-sign-connector');
 const pollRouter = require('./routes/poll');
 
 
@@ -32,7 +32,7 @@ const app = bootstrap()
     .use(express.static(`${__dirname}/public`))
     .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
     // Define our routes
-    .use(docSignRouter())
+    .use(docuSignRouter())
     .use(pollRouter());
 
 module.exports = app;

@@ -1,7 +1,7 @@
 {
     "globals": {
-        "jasmine": false,
-        "spyOn": false,
+        "test": false,
+        "jest": false,
         "it": false,
         "console": false,
         "describe": false,
