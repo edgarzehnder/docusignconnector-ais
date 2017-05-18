@@ -4,7 +4,6 @@
  * Here are all possible endpoints we use from DocuSign.
  */
 module.exports = function (request, querystring, log) {
-
     return {
 
         /**
@@ -73,7 +72,7 @@ module.exports = function (request, querystring, log) {
         },
 
         /**
-         * This tells docusign that the signing process has finished
+         * This tells docu-sign that the signing process has finished
          */
         postCompleteSignInfo: (context) => {
             return new Promise(function (resolve, reject) {

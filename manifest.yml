@@ -1,0 +1,10 @@
+---
+applications:
+- name: ds-ais-connector
+  memory: 128MB
+  instances: 1
+  buildpack: nodejs_buildpack
+
+  env:
+    NODE_ENV: production
+    FORCE_HTTPS: true

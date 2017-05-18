@@ -39,6 +39,9 @@ module.exports = function (request, log, dateFormat, sleep) {
                         'Content-Type': 'application/json;charset=UTF-8',
                         'Accept': 'application/json'
                     },
+                    key: process.env.AIS_SSL_KEY,
+                    cert: process.env.AIS_SSL_CERT,
+                    ca: process.env.AIS_CA,
                     body: JSON.stringify(json)
                 }, (error, response, body) => {
                     context.signInfo = body;
@@ -109,6 +112,9 @@ module.exports = function (request, log, dateFormat, sleep) {
                         'Content-Type': 'application/json;charset=UTF-8',
                         'Accept': 'application/json'
                     },
+                    key: process.env.AIS_SSL_KEY,
+                    cert: process.env.AIS_SSL_CERT,
+                    ca: process.env.AIS_CA,
                     body: JSON.stringify(json)
                 }, (error, response, body) => {
 

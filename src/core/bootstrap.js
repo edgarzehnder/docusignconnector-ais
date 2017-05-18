@@ -27,7 +27,7 @@ module.exports = () => {
 
     // Set config values to the express app
     app.set('url', process.env.APP_URL);
-    app.set('port', normalizePort(process.env.APP_PORT));
+    app.set('port', normalizePort(process.env.PORT || process.env.APP_PORT));
 
     return app;
 };

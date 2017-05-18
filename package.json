@@ -4,7 +4,7 @@
   "description": "DocuSign connector for All-In Signing Service as Trust Service Provider.",
   "main": "src/index.js",
   "engines": {
-    "node": "^7.7.3"
+    "node": "^6.9.2"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
