@@ -27,7 +27,7 @@ module.exports = function (request, querystring, log) {
                     },
                     body: querystring.stringify(payload)
                 }, (error, response, body) => {
-                    if (!error && response.statusCode === '200') {
+                    if (!error && response.statusCode === 200) {
                         log.info('Got access token');
                         body = JSON.parse(body);
                         context.auth = {
@@ -59,7 +59,7 @@ module.exports = function (request, querystring, log) {
                         'Content-Type': 'application/json; charset=utf-8'
                     }
                 }, function (error, response, body) {
-                    if (!error && response.statusCode === '200') {
+                    if (!error && response.statusCode === 200) {
                         log.info('Got session info from DocuSign');
                         context.sessionInfo = JSON.parse(body);
                         resolve(context);
@@ -83,14 +83,6 @@ module.exports = function (request, querystring, log) {
 
                 var postBody = {
                     'documentUpdateInfos': []
-                    /*
-                    'documentUpdateInfos': [
-                        {
-                        'data': signature,
-                        'documentId': json.documents[0].documentId,
-                        'returnFormat': 'CMS'
-                        }
-                    ]*/
                 };
                 // Multi-document support
                 if (context.sessionInfo.documents.length === 1) {

@@ -46,7 +46,7 @@ module.exports = function (request, log, dateFormat, sleep) {
                 }, (error, response, body) => {
                     context.signInfo = body;
                     // Check if request was successful
-                    if (!error && response.statusCode === '200') {
+                    if (!error && response.statusCode === 200) {
                         log.info('Successfully requested sign process');
                         // Verify if the ais service returned an error
                         if (ERROR_STRINGS.indexOf(body.SignResponse.Result.ResultMajor) > -1) {
@@ -118,7 +118,7 @@ module.exports = function (request, log, dateFormat, sleep) {
                     body: JSON.stringify(json)
                 }, (error, response, body) => {
 
-                    if (!error && response.statusCode === '200') {
+                    if (!error && response.statusCode === 200) {
                         log.info('Successfully requested sign process');
 
                         const signResponseJson = body;

@@ -12,7 +12,7 @@ test('getOAuthToken should return the user api link and the access token into th
         process.nextTick(() =>
             callback(undefined,
                 {
-                    statusCode: '200'
+                    statusCode: 200
                 },
                 '{ "access_token": "1234", "user_api": "/api/user" }')
         );
@@ -35,7 +35,7 @@ test('getOAuthToken should fail if the status code is not 200', () => {
         process.nextTick(() =>
             callback(undefined,
                 {
-                    statusCode: '401'
+                    statusCode: 401
                 },
                 '')
         );
@@ -61,7 +61,7 @@ test('getOAuthToken should have a valid headers', () => {
         process.nextTick(() =>
             callback(undefined,
                 {
-                    statusCode: '200'
+                    statusCode: 200
                 },
                 '{ "access_token": "1234", "user_api": "/api/user" }')
         );
@@ -86,7 +86,7 @@ test('getSignInfo should have valid headers', () => {
         process.nextTick(() =>
             callback(undefined,
                 {
-                    statusCode: '200'
+                    statusCode: 200
                 },
                 '{ "example": "json" }')
         );
@@ -109,7 +109,7 @@ test('getSignInfo should pass ', () => {
         process.nextTick(() =>
             callback(undefined,
                 {
-                    statusCode: '200'
+                    statusCode: 200
                 },
                 '{ "access_token": "1234", "user_api": "/api/user" }')
         );
@@ -132,7 +132,7 @@ test('getSignInfo should fail if the status code is not 200', () => {
         process.nextTick(() =>
             callback('',
                 {
-                    statusCode: '401'
+                    statusCode: 401
                 },
                 '{ "error": "example" }')
         );
@@ -162,7 +162,7 @@ function testPostCompleteSignInfoFail(context) {
         process.nextTick(() =>
             callback('',
                 {
-                    statusCode: '401'
+                    statusCode: 401
                 },
                 '{ "example": "json" }')
         );
@@ -204,43 +204,87 @@ test('postCompleteSignInfo should fail if there is no session info and no access
     testPostCompleteSignInfoFail({});
 });
 
-// test('postCompleteSignInfo should pass ', () => {
-//     process.env.DS_API_COMPLETE_SIGN_HASH = '/test';
-//     const requestMock = jest.fn((options, callback) => {
-//         process.nextTick(() =>
-//             callback(undefined,
-//                 {
-//                     statusCode: '200'
-//                 },
-//                 '{ "success": true }')
-//         );
-//     });
-//     const logMock = {
-//         info: jest.fn(),
-//         error: jest.fn()
-//     };
-//     const service = aisServiceMain(requestMock, qs, logMock);
-//     return service.postCompleteSignInfo({
-//         auth: {
-//             token: '123.ok',
-//             link: '/user-api'
-//         },
-//         sessionInfo: {
-//             documents: [
-//                 {
-//                     documentId: 'DocId',
-//                     name: 'DocName'
-//                 }
-//             ]
-//         },
-//         signature: {
-//             Base64Signature: {
-//                 $: 'Base64Signature'
-//             }
-//         }
-//     })
-//         .then((body) => {
-//             expect(logMock.info).toBeCalled();
-//             expect(body.success).toBe(true);
-//         });
-// });
+test('postCompleteSignInfo should pass', () => {
+    process.env.DS_API_COMPLETE_SIGN_HASH = '/test';
+    const requestMock = jest.fn((options, callback) => {
+        process.nextTick(() =>
+            callback(undefined,
+                {
+                    statusCode: 200
+                },
+                '{ "success": true }')
+        );
+    });
+    const logMock = {
+        info: jest.fn(),
+        error: jest.fn()
+    };
+    const service = aisServiceMain(requestMock, qs, logMock);
+    return service
+        .postCompleteSignInfo({
+            auth: {
+                token: '123.ok',
+                link: '/user-api'
+            },
+            sessionInfo: {
+                documents: [
+                    {
+                        documentId: 'DocId',
+                        name: 'DocName'
+                    }
+                ]
+            },
+            signature: {
+                Base64Signature: {
+                    $: 'Base64Signature'
+                }
+            }
+        })
+        .then((body) => {
+            expect(logMock.info).toBeCalled();
+            expect(body.success).toBe(true);
+        });
+});
+
+test('postCompleteSignInfo should fail if the status code is not 200', () => {
+    process.env.DS_API_COMPLETE_SIGN_HASH = '/test';
+    const requestMock = jest.fn((options, callback) => {
+        process.nextTick(() =>
+            callback(undefined,
+                {
+                    statusCode: 401
+                },
+                '{ "success": false }')
+        );
+    });
+    const logMock = {
+        info: jest.fn(),
+        error: jest.fn()
+    };
+    const service = aisServiceMain(requestMock, qs, logMock);
+    return service
+        .postCompleteSignInfo({
+            auth: {
+                token: '123.ok',
+                link: '/user-api'
+            },
+            sessionInfo: {
+                documents: [
+                    {
+                        documentId: 'DocId',
+                        name: 'DocName'
+                    }
+                ]
+            },
+            signature: {
+                Base64Signature: {
+                    $: 'Base64Signature'
+                }
+            }
+        })
+        .catch((error) => {
+            expect(logMock.error).toBeCalled();
+            expect(error.success).toBe(false);
+        });
+});
+
