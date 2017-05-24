@@ -2,17 +2,22 @@
 
 const winston = require('winston');
 
-// require('winston-logstash');
-// /**
-//  * ELK Integration
-//  */
-// if (process.env.NODE_ENV === 'production') {
-//     winston.add(winston.transports.Logstash, {
-//         node_NODE_ENV: process.env.APP_LOGGER_REMOTE_NODE_NAME,
-//         host: process.env.APP_LOGGER_REMOTE_HOST,
-//         port: process.env.APP_LOGGER_REMOTE_PORT
-//     });
-// }
+/**
+ * ELK Integration
+ */
+if (process.env.NODE_ENV === 'production') {
+    require('winston-logstash');
+    const vcapServices = JSON.parse(process.env.VCAP_SERVICES);
+    const elk = vcapServices.elk[0].credentials;
+
+    winston.add(winston.transports.Logstash, {
+        node_NODE_ENV: process.env.APP_LOGGER_REMOTE_NODE_NAME,
+        host: elk.logstashHost,
+        port: elk.logstashPort
+        // host: process.env.APP_LOGGER_REMOTE_HOST,
+        // port: process.env.APP_LOGGER_REMOTE_PORT
+    });
+}
 
 /**
  * Basic winston logger configuration
