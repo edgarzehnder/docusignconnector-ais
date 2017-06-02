@@ -18,7 +18,7 @@ module.exports = function (request, querystring, log) {
                 };
 
                 log.info('Requesting access token');
-                request({
+                const options = {
                     url: process.env.DS_OAUTH_TOKEN_PATH,
                     method: 'POST',
                     headers: {
@@ -26,7 +26,8 @@ module.exports = function (request, querystring, log) {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     body: querystring.stringify(payload)
-                }, (error, response, body) => {
+                }
+                request(options, (error, response, body) => {
                     if (!error && response.statusCode === 200) {
                         log.info('Got access token');
                         body = JSON.parse(body);
@@ -36,7 +37,8 @@ module.exports = function (request, querystring, log) {
                         };
                         resolve(context);
                     } else {
-                        log.error('Failed requesting the access token from DocuSign', error);
+                        log.error('Failed requesting the access token from DocuSign');
+                        log.error(JSON.stringify(body));
                         reject(body);
                     }
                 });
@@ -50,21 +52,23 @@ module.exports = function (request, querystring, log) {
          */
         getSignInfo: (context) => {
             return new Promise((resolve, reject) => {
-                log.info('Got access token');
+                log.info('Got sign info');
                 request({
                     url: context.auth.link + process.env.DS_API_SIGN_HASH_SESSION_INFO,
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + context.auth.token,
                         'Content-Type': 'application/json; charset=utf-8'
-                    }
+                    },
+                    body: JSON.stringify({})
                 }, function (error, response, body) {
                     if (!error && response.statusCode === 200) {
                         log.info('Got session info from DocuSign');
                         context.sessionInfo = JSON.parse(body);
                         resolve(context);
                     } else {
-                        log.error('Failed at getting session infos', error);
+                        log.error('Failed at getting session infos');
+                        log.error(JSON.stringify(body));
                         reject(body);
                     }
                 });
@@ -123,7 +127,8 @@ module.exports = function (request, querystring, log) {
                         log.info('Successfully complete sign hash');
                         resolve(body);
                     } else {
-                        log.error('Failed to complete sign hash!', error);
+                        log.error('Failed to complete sign hash!');
+                        log.error(JSON.stringify(body));
                         reject(body);
                     }
                 });
@@ -139,8 +144,8 @@ module.exports = function (request, querystring, log) {
      * @returns {string} basic token
      */
     function buildAuthorizationHeader() {
-        const integratorKey = process.env.INTEGRATOR_KEY;
-        const secretKey = process.env.SECRET_KEY;
+        const integratorKey = process.env.DS_OAUTH_INTEGRATOR_KEY;
+        const secretKey = process.env.DS_OAUTH_SECRET_KEY;
         return new Buffer(integratorKey + ':' + secretKey).toString('base64');
     }
 };

@@ -32,7 +32,7 @@ module.exports = function (request, log, dateFormat, sleep) {
                 const json = getSignRequest(process.env.CLAIMED_IDENTITY, dn, phone, context.sessionInfo.documents);
 
                 log.info('Requesting sign process from ais');
-                request({
+                const options = {
                     url: process.env.AIS_HOST + '/sign',
                     method: 'POST',
                     headers: {
@@ -43,8 +43,11 @@ module.exports = function (request, log, dateFormat, sleep) {
                     cert: process.env.AIS_SSL_CERT,
                     ca: process.env.AIS_CA,
                     body: JSON.stringify(json)
-                }, (error, response, body) => {
+                };
+                request(options, (error, response, body) => {
+                    body = JSON.parse(body);
                     context.signInfo = body;
+
                     // Check if request was successful
                     if (!error && response.statusCode === 200) {
                         log.info('Successfully requested sign process');
@@ -53,7 +56,8 @@ module.exports = function (request, log, dateFormat, sleep) {
                             const error = body.SignResponse.Result.ResultMajor + " -> " +
                                 body.SignResponse.Result.ResultMinor + " -> " +
                                 body.SignResponse.Result.ResultMessage.$;
-                            log.warn('Failed requesting the sign process', error);
+                            log.warn('Failed requesting the sign process');
+                            log.warn(error);
                             reject(error);
                         }
 
@@ -75,13 +79,13 @@ module.exports = function (request, log, dateFormat, sleep) {
                         };
                         resolve(context);
                     } else {
-                        log.error('Failed requesting the sign process', error);
+                        log.error('Failed requesting the sign process');
+                        log.error(JSON.stringify(body));
                         reject(body);
                     }
                 });
             });
         },
-
 
         pending: pending
 
@@ -121,7 +125,7 @@ module.exports = function (request, log, dateFormat, sleep) {
                     if (!error && response.statusCode === 200) {
                         log.info('Successfully requested sign process');
 
-                        const signResponseJson = body;
+                        const signResponseJson = JSON.parse(body);
                         var signResponse = signResponseJson.SignResponse;
                         var pendingResult = signResponse.Result.ResultMajor;
 

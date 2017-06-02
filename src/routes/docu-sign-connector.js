@@ -38,7 +38,7 @@ module.exports = () => {
          * }
          */
         docuSignService
-            .getOAuthToken(req.query.code)
+            .getOAuthToken(req.query.code, {})
             .then((context) => docuSignService.getSignInfo(context))
             .then((context) => aisService.sign(context))
             .then((context) => {
