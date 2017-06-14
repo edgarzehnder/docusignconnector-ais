@@ -14,8 +14,6 @@ if (process.env.NODE_ENV === 'production') {
         node_NODE_ENV: process.env.APP_LOGGER_REMOTE_NODE_NAME,
         host: elk.logstashHost,
         port: elk.logstashPort
-        // host: process.env.APP_LOGGER_REMOTE_HOST,
-        // port: process.env.APP_LOGGER_REMOTE_PORT
     });
 }
 
@@ -28,11 +26,31 @@ const logger = new winston.Logger({
             level: process.env.APP_LOGGER_LEVEL,
             timestamp: (process.env.NODE_ENV === 'production'),
             handleExceptions: (process.env.NODE_ENV === 'production'),
-            json: (process.env.NODE_ENV === 'production'),
             colorize: (process.env.NODE_ENV !== 'production')
         })
     ],
     exitOnError: false
 });
 
-module.exports = logger;
+function addTenantId(value) {
+    return '[' + process.env.TENANT_ID + '] ' + value;
+}
+
+module.exports = {
+    debug: function (...args) {
+        args[0] = addTenantId(args[0]);
+        logger.debug(...args);
+    },
+    info: function (...args) {
+        args[0] = addTenantId(args[0]);
+        logger.info(...args);
+    },
+    warn: function (...args) {
+        args[0] = addTenantId(args[0]);
+        logger.warn(...args);
+    },
+    error: function (...args) {
+        args[0] = addTenantId(args[0]);
+        logger.error(...args);
+    }
+};

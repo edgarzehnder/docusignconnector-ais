@@ -28,8 +28,9 @@ module.exports = function (request, log, dateFormat, sleep) {
                 // Build the DN, with the user name in the DS response and the configured values
                 const prefix = process.env.CN_PREFIX ? process.env.CN_PREFIX + ' ' : '';
                 const dn = 'cn=' + prefix + context.sessionInfo.user.displayName + ', ' + process.env.DN_SUFFIX;
+                const claimedIdentity = process.env.TENANT_ID + ':' + process.env.SIGNATURE_TYPE;
                 // Support for multi-document (old getJsonRequest() supported only one document)
-                const json = getSignRequest(process.env.CLAIMED_IDENTITY, dn, phone, context.sessionInfo.documents);
+                const json = getSignRequest(claimedIdentity, dn, phone, context.sessionInfo.documents);
 
                 log.info('Requesting sign process from ais');
                 const options = {
@@ -101,7 +102,8 @@ module.exports = function (request, log, dateFormat, sleep) {
      */
     function pending(responseID, counter) {
         return new Promise(function (resolve, reject) {
-            const json = getPendingJsonRequest(process.env.CLAIMED_IDENTITY, responseID);
+            const claimedIdentity = process.env.TENANT_ID + ':' + process.env.SIGNATURE_TYPE;
+            const json = getPendingJsonRequest(claimedIdentity, responseID);
 
             log.info('Wait to poll again. counter=', counter);
             const wait = (counter === 0) ? 0 : 10000;
