@@ -39,7 +39,7 @@ module.exports = () => {
             process.env.AIS_SSL_KEY = response.key;
             process.env.AIS_SSL_CERT = response.cert;
         } else {
-            error = error.message.split('\n').splice(2,2).toString().split(",").join("\n");
+            error =  error.message.split('\n').filter(message => message !== '').slice(-1);
             log.error(error);
             process.exit(1);
         }
