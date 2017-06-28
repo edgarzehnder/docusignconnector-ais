@@ -2,3 +2,4 @@
 .dockerignore
 docker.run
 node_modules
+certs
