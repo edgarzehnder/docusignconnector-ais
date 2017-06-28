@@ -39,7 +39,8 @@ module.exports = () => {
             process.env.AIS_SSL_KEY = response.key;
             process.env.AIS_SSL_CERT = response.cert;
         } else {
-            log.error('invalid cert file');
+            error = error.message.split('\n').splice(2,2).toString().split(",").join("\n");
+            log.error(error);
             process.exit(1);
         }
     });
@@ -47,8 +48,8 @@ module.exports = () => {
     //read ca from pem-file
     try {
         process.env.AIS_CA = fs.readFileSync(process.env.CA_PATH);
-    } catch (err) {
-        log.error('invalid ca-cert file');
+    } catch (error) {
+        log.error(error);
         process.exit(1);
     }
 
