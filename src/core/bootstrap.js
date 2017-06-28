@@ -1,7 +1,9 @@
 "use strict";
 
-const express = require('express');
-
+const express = require('express'),
+    pem = require('pem'),
+    fs = require('fs'),
+    log = require('../core/logger');
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -29,7 +31,26 @@ module.exports = () => {
     app.set('url', process.env.APP_URL);
     app.set('port', normalizePort(process.env.PORT || process.env.APP_PORT));
 
+    //read keys from files
+    pem.readPkcs12(process.env.P12_PATH, {
+        p12Password: process.env.P12_PASSWORD
+    }, (error, response) => {
+        if (error === null) {
+            process.env.AIS_SSL_KEY = response.key;
+            process.env.AIS_SSL_CERT = response.cert;
+        } else {
+            log.error('invalid cert file');
+            process.exit(1);
+        }
+    });
+
+    //read ca from pem-file
+    try {
+        process.env.AIS_CA = fs.readFileSync(process.env.CA_PATH);
+    } catch (err) {
+        log.error('invalid ca-cert file');
+        process.exit(1);
+    }
+
     return app;
 };
-
-
