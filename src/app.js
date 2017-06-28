@@ -11,6 +11,7 @@ const bootstrap = require('./core/bootstrap');
 const log = require('./core/logger');
 const docuSignRouter = require('./routes/docu-sign-connector');
 const pollRouter = require('./routes/poll');
+const statusRouter = require('./routes/status-monitor');
 
 
 // Configure our app
@@ -33,6 +34,7 @@ const app = bootstrap()
     .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
     // Define our routes
     .use(docuSignRouter())
-    .use(pollRouter());
+    .use(pollRouter())
+    .use(statusRouter());
 
 module.exports = app;
